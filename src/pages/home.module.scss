@@ -1,1 +1,68 @@
-// TODO
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+
+  img {
+    margin: 5rem 0 4rem;
+  }
+
+  > button {
+    background-color: transparent;
+    border: none;
+    margin-top: 4rem;
+    color: var(--pink);
+    font-size: 1.125rem;
+    font-weight: 600;
+
+    &:hover{
+      text-decoration: underline;
+    }
+  }
+}
+
+.posts {
+  a {
+    display: block;
+
+    & + a {
+      margin-top: 3rem;
+    }
+  }
+
+  h1{
+    color: var(--white);
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  p{
+    color: var(--gray-300);
+    margin-bottom:1.5rem;
+    font-size: 1.125rem;
+  }
+
+  div{
+    color: var(--gray-300);
+    display: flex;
+    font-size: 0.875rem;
+    align-items: center;
+
+    time {
+      display: flex;
+      align-items: center;
+      margin-right: 1.5rem;
+    }
+
+    address {
+      display: flex;
+      align-items: center;
+    }
+
+    svg {
+      margin-right: 0.5rem;
+      font-size: 1.25rem;
+    }
+  }
+
+
+}
