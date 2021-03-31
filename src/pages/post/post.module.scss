@@ -1,7 +1,3 @@
-.container {
-  // width: 100%;
-}
-
 .bannerContainer {
   img {
     width: 100%;
@@ -44,18 +40,21 @@
 }
 
 .article {
-  div {
     margin-top: 4rem;
+
+    div+div{
+      margin-top: 3rem;
+    }
 
     h2 {
       font-size: 2.25rem;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
     }
 
     p {
       font-size: 1.125rem;
       color: var(--gray-300);
     }
-  }
+
 }
 

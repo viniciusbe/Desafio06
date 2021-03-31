@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import commonStyles from '../../styles/common.module.scss';
 import { getPrismicClient } from '../../services/prismic';
 import styles from './post.module.scss';
@@ -41,9 +42,14 @@ interface PostProps {
 export default function Post({ post }: PostProps): JSX.Element {
   const router = useRouter();
 
-  // const readingTime = post.data.content.reduce(group =>
+  const wordsInPost = post.data.content.reduce((acc, group) => {
+    const wordsQuantityInHeading = group.heading.trim().split(/\s+/).length;
+    const wordsQuantityInBody = RichText.asText(group.body).trim().split(/\s+/)
+      .length;
+    return acc + wordsQuantityInHeading + wordsQuantityInBody;
+  }, 0);
 
-  //   , [])
+  const readingTime = Math.ceil(wordsInPost / 200);
 
   return (
     <>
@@ -54,7 +60,7 @@ export default function Post({ post }: PostProps): JSX.Element {
       {router.isFallback ? (
         <p>Carregando...</p>
       ) : (
-        <section className={styles.container}>
+        <section>
           <figure className={styles.bannerContainer}>
             <img src={post.data.banner.url} alt="banner" />
           </figure>
@@ -72,7 +78,8 @@ export default function Post({ post }: PostProps): JSX.Element {
                 {post.data.author}
               </address>
               <time>
-                <FiClock />4 min
+                <FiClock />
+                {readingTime} min
               </time>
             </div>
             <article className={styles.article}>
