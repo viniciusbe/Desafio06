@@ -1,8 +1,61 @@
 .container {
-  width: 100vh;
+  // width: 100%;
 }
 
-.bannerContainer{
-
-  margin: 0 auto;
+.bannerContainer {
+  img {
+    width: 100%;
+  }
 }
+
+.content {
+  max-width: 720px;
+  margin: 5rem auto;
+
+  h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  > div{
+    color: var(--gray-300);
+    display: flex;
+    font-size: 0.875rem;
+    align-items: center;
+
+    time {
+      display: flex;
+      align-items: center;
+      margin-right: 1.5rem;
+    }
+
+    address {
+      display: flex;
+      align-items: center;
+      margin-right: 1.5rem;
+    }
+
+    svg {
+      margin-right: 0.5rem;
+      font-size: 1.25rem;
+    }
+  }
+}
+
+.article {
+  div {
+    margin-top: 4rem;
+
+    h2 {
+      font-size: 2.25rem;
+      margin-bottom: 4rem;
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: var(--gray-300);
+    }
+  }
+}
+
