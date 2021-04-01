@@ -10,15 +10,16 @@ import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { useRouter } from 'next/router';
-import { useState } from 'react';
-import commonStyles from '../../styles/common.module.scss';
 import { getPrismicClient } from '../../services/prismic';
 import styles from './post.module.scss';
 import Header from '../../components/Header';
+import { UtterancesComments } from '../../components/Comments';
+import ExitPreviewButton from '../../components/ExitPreviewButton';
 
 interface Post {
   uid: string;
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     subtitle: string;
@@ -37,12 +38,13 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
 }
 
-export default function Post({ post }: PostProps): JSX.Element {
+export default function Post({ post, preview }: PostProps): JSX.Element {
   const router = useRouter();
 
-  const wordsInPost = post.data.content.reduce((acc, group) => {
+  const wordsInPost = post?.data.content.reduce((acc, group) => {
     const wordsQuantityInHeading = group.heading.trim().split(/\s+/).length;
     const wordsQuantityInBody = RichText.asText(group.body).trim().split(/\s+/)
       .length;
@@ -54,48 +56,56 @@ export default function Post({ post }: PostProps): JSX.Element {
   return (
     <>
       <Head>
-        <title>{post.data.title} | spacetraveling</title>
+        <title>{post?.data.title} | spacetraveling</title>
       </Head>
       <Header />
       {router.isFallback ? (
         <p>Carregando...</p>
       ) : (
-        <section>
-          <figure className={styles.bannerContainer}>
-            <img src={post.data.banner.url} alt="banner" />
-          </figure>
-          <main className={styles.content}>
-            <h1>{post.data.title}</h1>
-            <div>
-              <time>
-                <FiCalendar />
-                {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
-                  locale: ptBR,
-                })}
-              </time>
-              <address>
-                <FiUser />
-                {post.data.author}
-              </address>
-              <time>
-                <FiClock />
-                {readingTime} min
-              </time>
-            </div>
-            <article className={styles.article}>
-              {post.data.content.map(group => (
-                <div key={group.heading}>
-                  <h2>{group.heading}</h2>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: RichText.asHtml(group.body),
-                    }}
-                  />
-                </div>
-              ))}
-            </article>
-          </main>
-        </section>
+        <>
+          <section>
+            <figure className={styles.bannerContainer}>
+              <img src={post?.data.banner.url} alt="banner" />
+            </figure>
+            <main className={styles.content}>
+              <h1>{post?.data.title}</h1>
+              <div>
+                <time>
+                  <FiCalendar />
+                  {format(
+                    new Date(post?.first_publication_date),
+                    'dd MMM yyyy',
+                    {
+                      locale: ptBR,
+                    }
+                  )}
+                </time>
+                <address>
+                  <FiUser />
+                  {post?.data.author}
+                </address>
+                <time>
+                  <FiClock />
+                  {readingTime} min
+                </time>
+              </div>
+              <article className={styles.article}>
+                {post?.data.content.map(group => (
+                  <div key={group.heading}>
+                    <h2>{group.heading}</h2>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: RichText.asHtml(group.body),
+                      }}
+                    />
+                  </div>
+                ))}
+              </article>
+            </main>
+          </section>
+          <UtterancesComments />
+          {preview && <ExitPreviewButton />}
+        </>
       )}
     </>
   );
@@ -117,22 +127,43 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async context => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
 
-  const { slug } = context.params;
+  const { slug } = params;
 
-  const { uid, first_publication_date, data } = await prismic.getByUID(
-    'postc',
-    String(slug),
-    {}
+  const postsResponse = await prismic.query(
+    [Prismic.Predicates.at('document.type', 'postc')],
+    {
+      fetch: ['postc.title', 'postc.subtitle', 'postc.author'],
+      pageSize: 1,
+      ref: previewData?.ref ?? null,
+    }
   );
 
-  // console.log(data.content[0]);
+  const {
+    uid,
+    first_publication_date,
+    data,
+    last_publication_date,
+  } = await prismic.getByUID('postc', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
+
+  const post2 = await prismic.getByUID('postc', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
+
+  console.log(postsResponse);
 
   const post = {
     uid,
     first_publication_date,
+    last_publication_date,
     data: {
       title: data.title,
       subtitle: data.subtitle,
@@ -144,9 +175,7 @@ export const getStaticProps: GetStaticProps = async context => {
     },
   };
 
-  console.log(JSON.stringify(data, null, 2));
-
   return {
-    props: { post },
+    props: { post, preview },
   };
 };
