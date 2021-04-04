@@ -12,8 +12,10 @@ import ptBR from 'date-fns/locale/pt-BR';
 
 import { useRouter } from 'next/router';
 import { getPrismicClient } from '../../services/prismic';
+
 import styles from './post.module.scss';
 import Header from '../../components/Header';
+
 import { UtterancesComments } from '../../components/Comments';
 import ExitPreviewButton from '../../components/ExitPreviewButton';
 
@@ -103,6 +105,18 @@ export default function Post({
                   {readingTime} min
                 </time>
               </div>
+              {post.last_publication_date !== post.first_publication_date && (
+                <i>
+                  * editado em{' '}
+                  {format(
+                    new Date(post.last_publication_date),
+                    "dd MMM yyyy', às 'HH:ss",
+                    {
+                      locale: ptBR,
+                    }
+                  )}
+                </i>
+              )}
               <article className={styles.article}>
                 {post?.data.content.map(group => (
                   <div key={group.heading}>
