@@ -57,4 +57,34 @@
     }
 }
 
+.navigation {
+  max-width: 720px;
+  margin: 3.75rem auto 5rem;
+  padding-top: 3rem;
+
+  border-top: 1px solid var(--gray-300);
+  display: flex;
+  justify-content: space-between;
+
+  div {
+    max-width: 340px;
+
+    p{
+      font-size: 1.125rem;
+    }
+
+    a {
+      display: block;
+      font-weight: 600;
+      color: var(--pink);
+
+      margin-top: 0.5rem;
+
+    }
+  }
+
+  div:nth-child(2) {
+    text-align: end;
+  }
+}
 
